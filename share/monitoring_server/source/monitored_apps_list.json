@@ -1,0 +1,19 @@
+{
+  "monitored_apps_list": [
+    {
+      "id": 0,
+      "official_url": "http://xxxx.de/",
+      "heartbeat_url": "http://xxxx.de/heartbeat/",
+      "name": "xxxxx website",
+      "version": 0
+    },
+    {
+      "id": 1,
+      "official_url": "xxxxxx",
+      "heartbeat_url": "xxxxx/heartbeat/",
+      "name": "xxxxx",
+      "version": 0
+    }
+  ]
+}
+

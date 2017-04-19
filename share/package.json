@@ -1,0 +1,36 @@
+{
+  "name": "monitoring",
+  "version": "0.1.0",
+  "main": "monitoring_server/build/index.js",
+  "scripts": {
+    "start": "NODE_TLS_REJECT_UNAUTHORIZED=0 node monitoring_server/build",
+    "all": "npm run build:monitoring_client && npm run build:server && npm run build:client_heartbeat && npm start",
+    "build:server": "npm run test:server && npm run concat:server && npm run uglify:server",
+    "build:monitoring_client": "npm run concat:monitoring_client && npm run uglify:monitoring_client",
+    "build:client_heartbeat": "npm run concat:client_heartbeat",
+    "dev:server": "npm run build:server && npm start",
+    "dev:monitoring_client": "npm run build:monitoring_client && npm start",
+    "test:server": "jshint monitoring_server/source/*.js",
+    "concat:server": "node concat_monitoring_server.js",
+    "concat:monitoring_client": "node concat_monitoring_client.js",
+    "concat:client_heartbeat": "node concat_client_heartbeat.js",
+    "postbuild:server": "rm monitoring_server/source/output.js && cp monitoring_server/source/monitored_apps_list.json monitoring_server/build/",
+    "postbuild:monitoring_client": "rm monitoring_client/source/output.js",
+    "prebuild:monitoring_client": "cp -r monitoring_client/source/views monitoring_client/build/ && cp -r monitoring_client/source/css monitoring_client/build/",
+    "uglify:server": "uglifyjs monitoring_server/source/output.js -o monitoring_server/build/index.js",
+    "uglify:monitoring_client": "uglifyjs monitoring_client/source/output.js -o monitoring_client/build/js/main.js",
+    "nodemon": "bash ./node_modules/.bin/nodemon monitoring_server/build/index.js",
+    "env": "env"
+  },
+  "devDependencies": {
+    "concat-files": "^0.1.1",
+    "nodemon": "^1.11.0",
+    "watch": "^1.0.2"
+  },
+  "dependencies": {
+    "express": "^4.15.2",
+    "express-handlebars": "^3.0.0",
+    "moment": "^2.18.1",
+    "request": "^2.81.0"
+  }
+}

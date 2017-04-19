@@ -1,0 +1,90 @@
+<h1>Status</h1>
+
+<ul style="list-style-type: none;">
+    {{#each monitored_apps_list}}
+        <li>
+            <div style="border-bottom: 3px solid #4588ba; margin: 3px" class="row">
+                <div style="border-bottom: 1px solid #4588ba; margin: 1px"  class="row">
+                    <div style="margin-bottom: 3px" class="col-md-2">
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                        <a style="padding-left:3em" href={{this.official_url}} target="_blank">
+                            <button style="width: 12rem" type="button"
+                                    class="btn btn-sm btn-info">{{this.name}}</button>
+                        </a>
+                    </div>
+
+                    <div class="col-md-2">
+                        <span style="padding-left:3em"> currentStatus </span>
+                        {{#if this.check_status_model.currentStatus}}
+                            <i class="fa fa-circle" style="color: green" aria-hidden="true"></i>
+                        {{else}}
+                            <i class="fa fa-circle" style="color: red" aria-hidden="true"></i>
+                        {{/if}}
+                    </div>
+
+                    <div class="col-md-2">
+                        <span style="padding-left:3em"> php </span>
+                        {{#if this.check_status_model.phpStatus}}
+                            <i class="fa fa-circle" style="color: green" aria-hidden="true"></i>
+                        {{else}}
+                            <i class="fa fa-circle" style="color: red" aria-hidden="true"></i>
+                        {{/if}}
+                    </div>
+
+                    <div class="col-md-2">
+                        <span style="padding-left:3em"> apache </span>
+                        {{#if this.check_status_model.apacheStatus}}
+                            <i class="fa fa-circle" style="color: green" aria-hidden="true"></i>
+                        {{else}}
+                            <i class="fa fa-circle" style="color: red" aria-hidden="true"></i>
+                        {{/if}}
+                    </div>
+
+                    <div class="col-md-2" onmouseover="showAbsoluteDate(this)" onmouseout="showRelativeDate(this)">
+                        <span class="relative-date"
+                              style="padding-left:3em"> lastFail: {{this.check_status_model.lastFail}}</span>
+                        <i class="fa fa-clock-o fa-spin" aria-hidden="true"></i>
+                    </div>
+
+                    <div class="col-md-2" onmouseover="showAbsoluteDate(this)" onmouseout="showRelativeDate(this)">
+                        <span class="relative-date"
+                              style="padding-left:3em"> lastSuccess: {{this.check_status_model.lastSuccess}} </span>
+                        <i class="fa fa-clock-o fa-spin" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <div class="row">
+                        <div style="background-color: #ffddfa" class="col-md-12">
+                            <span style="padding-left:5em"> ErrorMsg: {{this.check_status_model.errorMsg}} </span>
+                        </div>
+                    </div>
+
+                </div>
+        </li>
+        <br>
+    {{/each}}
+</ul>
+
+<!-- Button trigger modal -->
+<button style="margin-left: 5em" type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#myModal">
+    Debug
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Heartbeat Status models</h4>
+            </div>
+            <div class="modal-body">
+                {{json monitored_apps_list}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

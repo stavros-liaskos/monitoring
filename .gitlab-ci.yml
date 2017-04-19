@@ -1,0 +1,85 @@
+image: deploy/alpine:latest
+
+stages:
+  - deploy
+  - addSnippets
+  - download
+#  - merge
+
+#build_dev:
+#  image: node:6.9.5
+#  stage: build
+#  script:
+#  - npm install
+
+xxxxxxx:
+  stage: deploy
+  before_script:
+  - apk update
+  - apk add rsync openssh
+  - mkdir -p /root/.ssh
+  - eval "$(ssh-agent -s)"
+  - echo "    IdentityFile ~/.ssh/id_rsa" >> /etc/ssh/ssh_config
+  # install ssh-agent
+  - 'which ssh-agent || ( apk update -y && apk add openssh-client -y )'
+  # run ssh-agent
+  - eval $(ssh-agent -s)
+  #copy key to file
+  - cp /root/.ssh/id_rsa ./key.file
+  - chmod 600 ./key.file
+  # add ssh key stored in SSH_PRIVATE_KEY variable to the agent  store
+  - ssh-add ./key.file
+  # disable host key checking (NOTE: makes you susceptible to man-in-the-middle attacks)
+  # WARNING: use only in docker container, if you use it with shell you will overwrite your user's ssh config
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+   - rsync -arvvce "ssh -o StrictHostKeyChecking=no" --exclude client_heartbeat --exclude monitoring_*/source share/* xxxxx
+   - rsync -arvvce "ssh -o StrictHostKeyChecking=no" Docker/* xxxxxx
+   - rsync -arvvce "ssh -o StrictHostKeyChecking=no" Docker/.dockerignore xxxxxxx
+  environment:
+    name: development
+    url: https://dev.xxxxxx.de/monitoring/
+  only:
+  - master
+  when: manual
+
+scholz-volkmer:
+  stage: deploy
+  before_script:
+  - apk update
+  - apk add rsync openssh
+  - mkdir -p /root/.ssh
+  - eval "$(ssh-agent -s)"
+  - echo "    IdentityFile ~/.ssh/id_rsa" >> /etc/ssh/ssh_config
+  # install ssh-agent
+  - 'which ssh-agent || ( apk update -y && apk add openssh-client -y )'
+  # run ssh-agent
+  - eval $(ssh-agent -s)
+  #copy key to file
+  - cp /root/.ssh/id_rsa ./key.file
+  - chmod 600 ./key.file
+  # add ssh key stored in SSH_PRIVATE_KEY variable to the agent  store
+  - ssh-add ./key.file
+  # disable host key checking (NOTE: makes you susceptible to man-in-the-middle attacks)
+  # WARNING: use only in docker container, if you use it with shell you will overwrite your user's ssh config
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+   - rsync -arvvce "ssh -o StrictHostKeyChecking=no" share/client_heartbeat/build/index.php xxxxxx
+  environment:
+    name: staging
+    url: https://dev.xxxxxx.de/monitoring/
+  when: manual
+
+package:
+  stage: download
+  script:
+    - cd share/client_heartbeat/build
+    - tar -cvf snippet.tar index.php
+    - mv snippet.tar ../../..
+  artifacts:
+    paths:
+    - snippet.tar
+  only:
+  - master
